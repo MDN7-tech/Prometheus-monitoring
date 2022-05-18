@@ -1,0 +1,9 @@
+- targets:
+  - 192.168.1.2:9100
+  labels:
+    Type: HostBasic
+    service: null
+    cluster: null
+    team: DevOps
+    app: monitoring
+    owner: m.madani

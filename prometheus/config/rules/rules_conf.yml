@@ -1,0 +1,23 @@
+groups:
+  - name: monitoring_status
+    rules:
+    - alert: target_status
+      expr: up == 0
+      for: 3m
+      labels:
+        severity: error
+        team: DevOps
+        type: hostbasic      
+      annotations:
+        summary: "host {{ $labels.instance }} down"
+        description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+    - alert: PrometheusNotConnectedToAlertmanager
+      expr: prometheus_notifications_alertmanagers_discovered < 1
+      for: 0m
+      labels:
+        severity: error
+        team: DevOps
+        type: hostbasic
+      annotations:
+        summary: "Prometheus not connected to alertmanager (host {{ $labels.instance }})"
+        description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"

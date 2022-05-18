@@ -1,0 +1,215 @@
+groups:
+  - name: elastic_crawl_twitter
+    rules:
+    - alert: twitter(fa)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_fa_collected[10m]))==0
+      for: 50m
+      labels:
+        severity: error
+        team: crawl
+        app: twitter_crawl
+      annotations:
+        summary: "twitter Farsi crawler has stopped"
+    - alert: twitter(fa)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_fa_collected[10m]))==0
+      for: 20m
+      labels:
+        severity: warning
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter Farsi crawler has stopped"        
+    - alert: twitter(fa)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_fa_collected[10m]))==0
+      for: 1m
+      labels:
+        severity: info
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter Farsi crawler has stopped"
+           
+    - alert: twitter(ar)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_ar_collected[10m]))==0
+      for: 50m
+      labels:
+        severity: error
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter arabi crawler has stopped"
+  
+    - alert: twitter(ar)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_ar_collected[10m]))==0
+      for: 20m
+      labels:
+        severity: warning
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter arabi crawler has stopped"
+    
+    - alert: twitter(ar)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_ar_collected[10m]))==0
+      for: 1m
+      labels:
+        severity: info
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter arabi crawler has stopped"
+    
+    - alert: twitter(en)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_en_collected[10m]))==0
+      for: 1h
+      labels:
+        severity: error
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter English crawler has stopped"
+    - alert: twitter(en)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_en_collected[10m]))==0
+      for: 30m
+      labels:
+        severity: warning
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter English crawler has stopped"
+   
+    - alert: twitter(en)crawlstatus
+      expr: floor(increase(elastic_twitter_tweets_en_collected[10m]))==0
+      for: 5m
+      labels:
+        severity: info
+        team: crawl
+        app: twitter_crawl        
+      annotations:
+        summary: "twitter English crawler has stopped"
+
+  - name: elastic_crawl_inastagram
+    rules:
+    - alert: instagram(fa)crawlstatus
+      expr: floor(increase(elastic_instagram_posts_fa_collected[10m]))==0
+      for: 40m
+      labels:
+        severity: error
+        team: crawl
+        app: instagram_crawl
+      annotations:
+        summary: "instagram Farsi crawler has stopped"
+   
+    - alert: instagram(fa)crawlstatus
+      expr: floor(increase(elastic_instagram_posts_fa_collected[10m]))==0
+      for: 10m
+      labels:
+        severity: warning
+        team: crawl
+        app: instagram_crawl
+      annotations:
+        summary: "instagram Farsi crawler has stopped"        
+    - alert: instagram(fa)crawlstatus
+      expr: floor(increase(elastic_instagram_posts_fa_collected[10m]))==0
+      for: 1m
+      labels:
+        severity: info
+        team: crawl
+        app: instagram_crawl
+      annotations:
+        summary: "instagram Farsi crawler has stopped" 
+  - name: elastic_crawl_telegram_group
+    rules:
+    - alert: telegram group crawlstatus
+      expr: floor(increase(elastic_telegram_channel_message_collected[10m]))==0
+      for: 40m
+      labels:
+        severity: error
+        team: crawl
+        app: telegram_crawl
+      annotations:
+        summary: "telegram group crawler has stopped"
+
+    - alert: telegram group crawlstatus
+      expr: floor(increase(elastic_telegram_channel_message_collected[10m]))==0
+      for: 10m
+      labels:
+        severity: warning
+        team: crawl
+        app: telegram_crawl
+      annotations:
+        summary: "telegram group crawler has stopped"
+
+    - alert: telegram group crawlstatus
+      expr: floor(increase(elastic_telegram_channel_message_collected[10m]))==0
+      for: 1m
+      labels:
+        severity: info
+        team: crawl
+        app: telegram_crawl
+      annotations:
+        summary: "telegram group crawler has stopped" 
+
+  - name: elastic_crawl_telegram_channel
+    rules:
+    - alert: telegram channel crawlstatus
+      expr: floor(increase(elastic_telegram_group_message_collected [10m]))==0
+      for: 40m
+      labels:
+        severity: error
+        team: crawl
+        app: telegram_crawl
+      annotations:
+        summary: "telegram channel crawler has stopped"
+
+    - alert: telegram channel crawlstatus
+      expr: floor(increase(elastic_telegram_group_message_collected [10m]))==0
+      for: 10m
+      labels:
+        severity: warning
+        team: crawl
+        app: telegram_crawl
+      annotations:
+        summary: "telegram channel crawler has stopped"        
+
+    - alert: telegram channel crawlstatus
+      expr: floor(increase(elastic_telegram_group_message_collected [10m]))==0
+      for: 1m
+      labels:
+        severity: info
+        team: crawl
+        app: telegram_crawl
+      annotations:
+        summary: "telegram channel crawler has stopped"
+
+  - name: elastic_crawl_news
+    rules:
+    - alert: news crawl status
+      expr: floor(increase(elastic_news_news_fa_collected [10m]))==0
+      for: 40m
+      labels:
+        severity: error
+        team: crawl
+        app: news_crawl
+      annotations:
+        summary: "news crawler has stopped"
+
+    - alert: news crawl status
+      expr: floor(increase(elastic_news_news_fa_collected [10m]))==0
+      for: 20m
+      labels:
+        severity: warning
+        team: crawl
+        app: news_crawl
+      annotations:
+        summary: "news crawler has stopped"
+
+    - alert: news crawl status
+      expr: floor(increase(elastic_news_news_fa_collected [10m]))==0
+      for: 1m
+      labels:
+        severity: info
+        team: crawl
+        app: news_crawl
+      annotations:
+        summary: "news crawler has stopped"

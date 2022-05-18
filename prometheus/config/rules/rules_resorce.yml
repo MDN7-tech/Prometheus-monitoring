@@ -1,0 +1,120 @@
+groups:
+  #----------------------------------------------hardware-------------------------------------
+  - name: hardware_alarm
+    rules:
+      - alert: cpu_usage
+        expr: (100-(floor(avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)*100)))>= 90
+        for: 5m
+        labels:
+          severity: error
+          team: DevOps
+          
+        annotations:
+          summary: "host  hight cpu usage\n cpu {{ $value }}%usage"
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+      - alert: cpu_usage
+        expr: (100-(floor(avg(rate(node_cpu_seconds_total{mode="idle"}[10m])) by (instance)*100)))>= 80
+        for: 10m
+        labels:
+          severity: warning
+          team: DevOps
+          
+        annotations:
+          summary: "host  hight cpu usage\n cpu {{ $value }}%usage"     
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+
+      - alert: cpu_usage
+        expr: (100-(floor(avg(rate(node_cpu_seconds_total{mode="idle"}[15m])) by (instance)*100)))>= 70
+        for: 15m
+        labels:
+          severity: info
+          team: DevOps
+          
+        annotations:
+          summary: "host  hight cpu usage\n cpu {{ $value }}%usage"        
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"  
+      - alert: Memory_usage
+        expr: floor((node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes)/node_memory_MemTotal_bytes*100)>= 90
+        for: 2m
+        labels:
+          severity: error
+          team: DevOps
+          
+        annotations:
+          summary: "host  hight memory usage\n has usage = {{ $value }}%"
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"      
+      - alert: Memory_usage
+        expr: floor((node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes)/node_memory_MemTotal_bytes*100)>= 80
+        for: 5m
+        labels:
+          severity: warning
+          team: DevOps
+          
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"          
+        annotations:
+          summary: "host  hight memory usage \n has usage = {{ $value }}%"
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+      - alert: Memory_usage
+        expr: floor((node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes)/node_memory_MemTotal_bytes*100)>= 70
+        for: 5m
+        labels:
+          severity: info
+          team: DevOps
+          
+        annotations:
+          summary: "host  hight memory usage \n has usage = {{ $value }}%"
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+      - alert: Disk_use
+        expr: (100-(floor((node_filesystem_size_bytes{fstype=~"ext.*|xfs",mountpoint !~".*pod.*",mountpoint !~".*boot.*"}-node_filesystem_avail_bytes)/node_filesystem_size_bytes*100)))<= 10
+        labels:
+          severity: error
+          team: DevOps
+        annotations:
+          summary: "host  is low on disk space\n has only {{ $value }}%FREE"
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"      
+      - alert: Disk_use
+        expr: (100-(floor((node_filesystem_size_bytes{fstype=~"ext.*|xfs",mountpoint !~".*pod.*",mountpoint !~".*boot.*"}-node_filesystem_avail_bytes)/node_filesystem_size_bytes*100)))<= 20
+        labels:
+          severity: warning
+          team: DevOps
+            
+        annotations:
+          summary: "host  is low on disk space\n has only {{ $value }}%FREE"
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+
+      - alert: Unusual_Disk
+        expr: rate(node_disk_read_time_seconds_total[1m]) / rate(node_disk_reads_completed_total[1m]) > 0.1 and rate(node_disk_reads_completed_total[1m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          team: DevOps                    
+        annotations:
+          summary: instance  unusual disk read latency  is growing (read operations > 100ms) Value = {{ $value }}
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"      
+      - alert: Unusual_Disk_Write
+        expr: rate(node_disk_write_time_seconds_total[1m]) / rate(node_disk_writes_completed_total[1m]) > 0.1 and rate(node_disk_writes_completed_total[1m]) > 0
+        for: 2m
+        labels:
+          severity: warning
+          team: DevOps                    
+        annotations:
+          summary: Host  unusual disk Write latency  is growing Value = {{ $value }}
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"
+      - alert: Unusual_Network_Download
+        expr: sum by (instance) (rate(node_network_receive_bytes_total[2m])) /1048576  > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: DevOps                    
+        annotations:
+          summary: Host  unusual network Download \n VALUE = {{ $value }} MB/s
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"    
+      - alert: Unusual_Network_Upload
+        expr: sum by (instance) (rate(node_network_transmit_bytes_total[2m])) / 1048576 > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: DevOps                    
+        annotations:
+          summary: Host  unusual network Upload \n VALUE = {{ $value }} MB/s
+          description: "team {{$labels.team}}  service {{$labels.service}} cluster {{$labels.cluster}} app {{$labels.app}} type {{$labels.type}}"

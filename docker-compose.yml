@@ -1,0 +1,122 @@
+version: "3.9"
+
+services:
+#prometheus run
+  prometheus:
+    image: prom/prometheus
+    hostname: prometheus
+    user: "1011:1011"
+    container_name: prometheus
+    restart: always
+    ports:
+      - ${PROMETHEUS_PORT}:9090
+    volumes:
+      - ./prometheus/config/:/etc/prometheus/
+      - ./prometheus/:/prometheus
+    #  - ./prometheus/web_console_l:/usr/share/prometheus/console_libraries
+    #  - ./prometheus/web_console_t:/usr/share/prometheus/consoles
+    command: 
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.config.file=/etc/prometheus/web.yml
+      - --web.enable-lifecycle
+      - --storage.tsdb.retention.time=30d
+    #  -  --web.listen-address=:9091
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "10"
+    networks:
+      - monitoring
+
+#alertmanger prometheus run
+  alertmanager:
+    image: prom/alertmanager
+    user: "1012:1012"
+    hostname: alertmanager
+    container_name: alertmanager
+    restart: always
+    ports:
+      - ${ALERTMANAGER_PORT}:9093
+      - 9094:9094
+    volumes:
+       - ./alertmanager/config:/etc/alertmanager/ 
+       - ./alertmanager/data:/alertmanager
+    command:
+       - --config.file=/etc/alertmanager/alertmanager.yml
+       - --web.config.file=/etc/alertmanager/web.yml
+       - --storage.path=/alertmanager 
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "10"
+    networks:
+      - monitoring
+# grafana run
+  grafana:
+    image: grafana/grafana
+    user: "1013:1013"
+    hostname: grafana
+    container_name: grafana
+    restart: always
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+       - ./grafana/data:/var/lib/grafana
+      #  - ./grafana/config:/etc/grafana/grafana.ini
+      # - ./monitoring/grafana/plugins:/var/lib/grafana/plugins
+      # - . /grafana/provisioning:/etc/grafana/provisioning"
+      # - ./grafana/plugins:/usr/share/grafana"
+      # - ./grafana/plugins:/var/log/grafana
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "10"
+    networks:
+      - monitoring
+  
+  blackbox:
+    image: prom/blackbox-exporter
+    hostname: blackbox
+    container_name: blackbox
+    restart: always
+    ports:
+      - ${blackbox_exporter_PORT}:9115
+    volumes:
+       - ./blackbox-exporter/config:/config
+    command: 
+       - --config.file=/config/blackbox.yml
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "10"
+    networks:
+      - monitoring      
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    hostname: cadvisor
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    - /dev/disk/:/dev/disk:ro 
+    logging:
+      options:
+        max-size: "1m"
+        max-file: "10"
+    networks:
+      - monitoring
+
+
+networks:
+  monitoring:
+    name: monitoring_network
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.20.30.0/27
+         gateway: 10.20.30.1    

@@ -1,0 +1,165 @@
+global:
+  scrape_interval: 1m # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 1m # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+# Alertmanager configuration
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+  - scheme: http
+    basic_auth:
+      username: prometheus
+      password: L!f3%d943?q5
+#    tls_config:
+#      ca_file: ca.crt
+#      cert_file: ca.crt
+#      key_file: ca.key
+    static_configs:
+    - targets: ["alertmanager:9093"]
+
+# Load rules once and periodically evaluate them according to the global "evaluation_interval".
+rule_files:
+- "rules/*.yml"
+
+####################################################################################################
+####################################################################################################
+# A scrape configuration containing exactly one endpoint to scrape:
+scrape_configs:
+  - job_name: "prometheus,alert"
+    scheme: http
+    basic_auth:
+      username: prometheus
+      password: L!f3%d943?q5
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+    - targets: 
+       - "prometheus:9090"
+       - "alertmanager:9093"        
+      labels:
+        Type: service
+        service: Monitoring
+        app: Prometheus
+        team: DevOps
+    relabel_configs:
+         - source_labels: [__address__]
+           target_label: instance
+           regex: ([^:]+)(?::\d+)?   # The first group matches the host, the second matches the port.
+           action: replace
+           replacement: '${1}-Resource-Control'  
+  - job_name: "grafana"
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ["grafana:3000"]
+      labels:
+        Type: service
+        service: Monitoring
+        app: grafana
+        team: DevOps    
+    relabel_configs:
+        - source_labels: [__address__]
+          regex: ([^:]+)(?::\d+)?
+          target_label: instance
+          replacement: ${1}
+
+#################################################################################################
+######################################infoserver#################################################                     
+  - job_name: "server_info"
+    scheme: https
+    basic_auth:
+      username: prometheus
+      password: L!f3%d943?q5
+    tls_config:
+      ca_file: "certs/prometheus.crt"
+      insecure_skip_verify: true
+    file_sd_configs:
+    - files:
+      - 'node_exporter.yml'     
+    relabel_configs:
+         - source_labels: [__address__]
+           target_label: instance
+           regex: ([^:]+)(?::\d+)?   # The first group matches the host, the second matches the port.
+           action: replace
+           replacement: '${1}-Resource-Control'     
+###############################################################################################################
+########################################DB monitoring##########################################################
+  - job_name: "Mysql"
+    scheme: https
+    basic_auth:
+      username: prometheus
+      password: L!f3%d943?q5
+    tls_config:
+      ca_file: "certs/prometheus.crt"
+      insecure_skip_verify: true
+    static_configs:
+    - targets: ["mysql-1:9104",
+                "mysql-2:9105"
+               ]
+      labels:
+        Type: service
+        service: mysql
+        app: sentiment
+        team: DBA              
+    relabel_configs:
+         - source_labels: [__address__]
+           target_label: instance
+           regex: ([^:]+)(?::\d+)?   # The first group matches the host, the second matches the port.
+           action: replace
+           replacement: '${1}-mysql'              
+
+  - job_name: "rabbitmq"
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+    - targets: [
+                "rabbit-1:15692",
+                "rabbit-2:15691"
+               ]
+      labels:
+        Type: service
+        service: rabbitmq
+        app: sentiment
+        team: DBA              
+    relabel_configs:
+         - source_labels: [__address__]
+           target_label: instance
+           regex: ([^:]+)(?::\d+)?   # The first group matches the host, the second matches the port.
+           action: replace
+           replacement: '${1}-rabbit'              
+  
+  - job_name: minio-job
+    bearer_token: <yourtoken>
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: https
+    static_configs:
+    - targets: [your minio address]
+      labels:
+        Type: service
+        service: minio
+        team: DataEngineer    
+    relabel_configs:
+         - source_labels: [__address__]
+           target_label: instance
+           regex: ([^:]+)(?::\d+)?   # The first group matches the host, the second matches the port.
+           action: replace
+           replacement: '${1}-Resource-Control'
+             
+  ########################################################################################################
+  ##########################################contaner monitoring###########################################
+  - job_name: "docker_monitoring"
+    static_configs:
+    - targets: ["cadvisor:8080",
+                "ip server container-1:9200",
+                "ip server container-1:9200"
+               ]
+      labels:
+        Type: docker
+        team: DevOps               
+    relabel_configs:
+         - source_labels: [__address__]
+           target_label: instance
+           regex: ([^:]+)(?::\d+)?   # The first group matches the host, the second matches the port.
+           action: replace
+           replacement: '${1}-Docker'              
+
