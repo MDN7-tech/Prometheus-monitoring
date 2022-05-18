@@ -13,7 +13,7 @@ cd ${PROJECT_DIR}
 sudo apt update -y
 sudo apt install -y git make nano
 
-git clone http://185.208.77.246/docker/monitoring.git .
+git clone git https://github.com/MDN7-tech/Prometheus-monitoring.git master
 # git checkout develop
  
 make init
